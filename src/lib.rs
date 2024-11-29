@@ -17,8 +17,11 @@ impl Envie {
     }
 
     /// Get a value by key.
-    pub fn get(&self, key: &str) -> Option<&String> {
-        self.variables.get(key).or_else(|| env::var(key).ok().as_ref())
+    pub fn get(&self, key: &str) -> Option<String> {
+        self.variables
+            .get(key)
+            .cloned()
+            .or_else(|| env::var(key).ok())
     }
 
     /// Get a value as a boolean.
