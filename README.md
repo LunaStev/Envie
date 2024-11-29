@@ -11,7 +11,7 @@ Envie is a lightweight and user-friendly library for managing environment variab
 Add Envie to your `Cargo.toml` file:
 
 ```toml
-envie = "0.1"
+envie = "0.1.0"
 ```
 
 Then run:
