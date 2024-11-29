@@ -1,10 +1,10 @@
-// src/lib.rs
 use std::collections::HashMap;
 use std::env;
 use std::fs;
+use std::io::Write;
 
 pub struct Envie {
-    variables: HashMap<String, String>,
+    pub variables: HashMap<String, String>,
 }
 
 impl Envie {
@@ -34,6 +34,61 @@ impl Envie {
                 "false" | "0" => Ok(false),
                 _ => Err(format!("Invalid boolean value for key '{}'", key)),
             })
+    }
+
+    /// Get a value as an integer.
+    pub fn get_int(&self, key: &str) -> Result<i32, String> {
+        self.get(key)
+            .ok_or(format!("Key '{}' not found", key))
+            .and_then(|v| v.parse().map_err(|_| format!("Invalid integer value for key '{}'", key)))
+    }
+
+    /// Get all environment variables as a HashMap.
+    pub fn get_all(&self) -> HashMap<String, String> {
+        self.variables.clone()
+    }
+
+    /// Set a value for a given key and update the .env file.
+    pub fn set(&mut self, key: &str, value: &str) -> Result<(), String> {
+        self.variables.insert(key.to_string(), value.to_string());
+        let content = fs::read_to_string(".env").unwrap_or_default();
+        let mut updated_content = String::new();
+        let mut found = false;
+
+        for line in content.lines() {
+            if line.starts_with(&format!("{}=", key)) {
+                updated_content.push_str(&format!("{}={}\n", key, value));
+                found = true;
+            } else {
+                updated_content.push_str(line);
+                updated_content.push('\n');
+            }
+        }
+
+        if !found {
+            updated_content.push_str(&format!("{}={}\n", key, value));
+        }
+
+        fs::write(".env", updated_content).map_err(|_| "Failed to write to .env file")?;
+        Ok(())
+    }
+
+    /// Remove a key-value pair and update the .env file.
+    pub fn remove(&mut self, key: &str) -> Result<(), String> {
+        self.variables.remove(key);
+
+        let content = fs::read_to_string(".env").unwrap_or_default();
+        let mut updated_content = String::new();
+
+        for line in content.lines() {
+            if !line.starts_with(&format!("{}=", key)) {
+                updated_content.push_str(line);
+                updated_content.push('\n');
+            }
+        }
+
+        fs::write(".env", updated_content).map_err(|_| "Failed to write to .env file")?;
+        Ok(())
     }
 
     /// Parse the content of a .env file into a HashMap.
