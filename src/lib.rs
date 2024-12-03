@@ -18,10 +18,11 @@ impl Envie {
 
     /// Get a value by key.
     pub fn get(&self, key: &str) -> Option<String> {
-        self.variables
-            .get(key)
-            .cloned()
-            .or_else(|| env::var(key).ok())
+        if let Some(value) = self.variables.get(key) {
+            Some(value.clone())
+        } else {
+            env::var(key).ok()
+        }
     }
 
     /// Get a value as a boolean.
@@ -91,6 +92,13 @@ impl Envie {
         Ok(())
     }
 
+    /// Set and apply the variable to the system environment
+    pub unsafe fn set_system_env(&mut self, key: &str, value: &str) -> Result<(), String> {
+        self.set(key, value)?;
+        env::set_var(key, value);
+        Ok(())
+    }
+
     /// Parse the content of a .env file into a HashMap.
     fn parse(content: &str) -> HashMap<String, String> {
         content
@@ -98,16 +106,35 @@ impl Envie {
             .filter_map(|line| {
                 let line = line.trim();
                 if line.is_empty() || line.starts_with('#') {
-                    None
-                } else {
-                    let parts: Vec<&str> = line.splitn(2, '=').collect();
-                    if parts.len() == 2 {
-                        Some((parts[0].trim().to_string(), parts[1].trim().to_string()))
-                    } else {
-                        None
-                    }
+                    return None;
                 }
+
+                let (key, value) = line.split_once('=')
+                    .map(|(k, v)| (k.trim(), v.trim()))
+                    .unwrap_or((line, ""));
+
+                Some((key.to_string(), value.to_string()))
             })
             .collect()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse() {
+        let content = "KEY1=VALUE1\nKEY2=VALUE2\n";
+        let variables = Envie::parse(content);
+        assert_eq!(variables.get("KEY1"), Some(&"VALUE1".to_string()));
+        assert_eq!(variables.get("KEY2"), Some(&"VALUE2".to_string()));
+    }
+
+    #[test]
+    fn test_get() {
+        let env = Envie { variables: HashMap::new() };
+        unsafe { env::set_var("TEST_KEY", "test_value"); }
+        assert_eq!(env.get("TEST_KEY"), Some("test_value".to_string()));
     }
 }

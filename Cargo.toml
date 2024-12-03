@@ -1,6 +1,6 @@
 [package]
 name = "envie"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = ["LunaStev <lunastev@gurmstudis.com>"]
 description = "Envie is a lightweight and user-friendly library for managing environment variables in Rust. It helps you load and parse .env files, retrieve variables with ease, and provides type-safe access to boolean and other data types."
