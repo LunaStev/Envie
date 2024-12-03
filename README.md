@@ -29,37 +29,35 @@ Here’s a quick example of how to use Envie:
 use envie::Envie;
 
 fn main() {
-    // Load the .env file and exit if it fails
+    // Load the .env file or exit with an error message if it fails
     let mut env = Envie::load().expect("Failed to load .env file");
 
-    // Get the DATABASE_URL value, or use "default_url" if it's not found
+    // Retrieve the DATABASE_URL value, or use "default_url" as a fallback
     let database_url = env.get("DATABASE_URL").unwrap_or_else(|| "default_url".to_string());
     println!("Database URL: {}", database_url);
 
-    // Get the DEBUG_MODE value, or set it to false if it's not found
+    // Retrieve the DEBUG_MODE value as a boolean, defaulting to false if not found
     let debug_mode = env.get_bool("DEBUG_MODE").unwrap_or_else(|_| false);
     println!("Debug Mode: {}", debug_mode);
 
-    // Add or update a new environment variable
+    // Add or update an environment variable
     env.set("NEW_VARIABLE", "12345").expect("Failed to set NEW_VARIABLE");
     println!("NEW_VARIABLE set to 12345");
 
-    // Print all environment variables
-    let all_vars = env.get_all();
+    // Print all currently loaded environment variables
     println!("All environment variables:");
-    for (key, value) in all_vars {
+    for (key, value) in env.get_all() {
         println!("{} = {}", key, value);
     }
 
-    // Delete a specific environment variable
+    // Remove a specific environment variable
     env.remove("NEW_VARIABLE").expect("Failed to remove NEW_VARIABLE");
     println!("NEW_VARIABLE removed");
 
-    // Reload the .env file to reflect the changes
-    let env = Envie::load().expect("Failed to load .env file after removal");
-    let all_vars = env.get_all();
-    println!("All environment variables after removal:");
-    for (key, value) in all_vars {
+    // Reload the .env file to confirm changes
+    let updated_env = Envie::load().expect("Failed to reload .env file");
+    println!("Updated environment variables:");
+    for (key, value) in updated_env.get_all() {
         println!("{} = {}", key, value);
     }
 }
