@@ -31,11 +31,7 @@ impl Envie {
 
     /// Get a value by key.
     pub fn get(&self, key: &str) -> Option<String> {
-        if let Some(value) = self.variables.get(key) {
-            Some(value.clone())
-        } else {
-            env::var(key).ok()
-        }
+        self.variables.get(key).cloned().or_else(|| env::var(key).ok())
     }
 
     /// Get a value as a boolean.
