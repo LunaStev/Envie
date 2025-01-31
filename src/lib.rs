@@ -110,7 +110,6 @@ impl Envie {
                 let (key, value) = line.split_once('=')
                     .map(|(k, v)| (k.trim(), v.trim()))
                     .unwrap_or((line, ""));
-
                 Some((key.to_string(), value.to_string()))
             })
             .collect()
