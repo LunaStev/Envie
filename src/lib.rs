@@ -159,7 +159,7 @@ mod tests {
     #[test]
     fn test_export_to_system_env() {
         let env = Envie { variables: HashMap::from([("SYSTEM_KEY".to_string(), "system_value".to_string())]) };
-        unsafe { env.export_to_system_env().unwrap(); }
+        env.export_to_system_env().unwrap();
         assert_eq!(env::var("SYSTEM_KEY").unwrap(), "system_value");
     }
 }
