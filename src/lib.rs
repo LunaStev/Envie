@@ -60,7 +60,7 @@ impl Envie {
     /// Get a value as a float (f64).
     pub fn get_f64(&self, key: &str) -> Result<f64, String> {
         self.get(key)
-            .ok_or(format!("Key '{}' not found", key))
+            .ok_or_else(|| format!("Key '{}' not found", key))
             .and_then(|v| v.parse().map_err(|_| format!("Invalid float value for key '{}'", key)))
     }
 
