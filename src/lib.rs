@@ -77,14 +77,7 @@ impl Envie {
     /// Set a value for a given key and update the .env file.
     pub fn set(&mut self, key: &str, value: &str) -> Result<(), String> {
         self.variables.insert(key.to_string(), value.to_string());
-
-        let mut content = String::new();
-        for (k, v) in &self.variables {
-            content.push_str(&format!("{}={}\n", k, v));
-        }
-
-        fs::write(".env", content).map_err(|_| "Failed to write to .env file")?;
-        Ok(())
+        self.save_to_env_file()
     }
 
     /// Remove a key-value pair and update the .env file.
