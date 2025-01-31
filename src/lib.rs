@@ -42,7 +42,7 @@ impl Envie {
     pub fn get_bool(&self, key: &str) -> Result<bool, String> {
         self.get(key)
             .map(|v| v.to_lowercase())
-            .ok_or(format!("Key '{}' not found", key))
+            .ok_or_else(|| format!("Key '{}' not found", key))
             .and_then(|v| match v.as_str() {
                 "true" | "1" => Ok(true),
                 "false" | "0" => Ok(false),
