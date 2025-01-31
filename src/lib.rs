@@ -150,7 +150,7 @@ mod tests {
     #[test]
     fn test_get() {
         let env = Envie { variables: HashMap::new() };
-        unsafe { env::set_var("TEST_KEY", "test_value"); }
+        env::set_var("TEST_KEY", "test_value");
         assert_eq!(env.get("TEST_KEY"), Some("test_value".to_string()));
     }
 
