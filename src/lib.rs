@@ -97,6 +97,16 @@ impl Envie {
         Ok(())
     }
 
+    /// Save the current state of the environment variables to the .env file.
+    fn save_to_env_file(&self) -> Result<(), String> {
+        let mut content = String::new();
+        for (k, v) in &self.variables {
+            content.push_str(&format!("{}={}\n", k, v));
+        }
+        fs::write(".env", content).map_err(|_| "Failed to write to .env file")?;
+        Ok(())
+    }
+
     /// Parse the content of a .env file into a HashMap.
     fn parse(content: &str) -> HashMap<String, String> {
         content
