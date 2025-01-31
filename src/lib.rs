@@ -108,7 +108,7 @@ impl Envie {
     }
 
     /// Export all loaded variables to the system environment.
-    pub unsafe fn export_to_system_env(&self) -> Result<(), String> {
+    pub fn export_to_system_env(&self) -> Result<(), String> {
         for (key, value) in &self.variables {
             env::set_var(key, value);
         }
