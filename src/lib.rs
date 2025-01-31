@@ -53,7 +53,7 @@ impl Envie {
     /// Get a value as an integer.
     pub fn get_int(&self, key: &str) -> Result<i32, String> {
         self.get(key)
-            .ok_or(format!("Key '{}' not found", key))
+            .ok_or_else(|| format!("Key '{}' not found", key))
             .and_then(|v| v.parse().map_err(|_| format!("Invalid integer value for key '{}'", key)))
     }
 
