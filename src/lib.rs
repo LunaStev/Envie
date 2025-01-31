@@ -101,7 +101,7 @@ impl Envie {
     }
 
     /// Set and apply the variable to the system environment
-    pub unsafe fn set_system_env(&mut self, key: &str, value: &str) -> Result<(), String> {
+    pub fn set_system_env(&mut self, key: &str, value: &str) -> Result<(), String> {
         self.set(key, value)?;
         env::set_var(key, value);
         Ok(())
